@@ -1,0 +1,11 @@
+{
+  "id": "yourgatewayname-XXXXXXXXXXXX",
+  "gateway_id": "yourgatewayname-XXXXXXXXXXXX",
+  "gateway_url": "https://yourgatewayname-XXXXXXXXXXXX.gateway.bedrock-agentcore.us-west-2.amazonaws.com/mcp",
+  "gateway_arn": "arn:aws:bedrock-agentcore:us-west-2:123456789012:gateway/yourgatewayname-XXXXXXXXXXXX",
+  "name": "YourGatewayName",
+  "region": "us-west-2",
+  "target_id": "XXXXXXXXXX",
+  "target_name": "YourTargetName",
+  "lambda_arn": "arn:aws:lambda:us-west-2:123456789012:function:YourLambdaFunction"
+}

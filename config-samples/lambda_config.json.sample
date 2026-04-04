@@ -1,0 +1,27 @@
+{
+  "function_arn": "arn:aws:lambda:us-west-2:123456789012:function:YourLambdaFunction",
+  "function_name": "YourLambdaFunction",
+  "tool_name": "your_tool_name",
+  "tool_schema": {
+    "name": "your_tool_name",
+    "description": "Description of what your tool does",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "parameter_name": {
+          "type": "string",
+          "description": "Description of the parameter"
+        }
+      },
+      "required": [
+        "parameter_name"
+      ]
+    }
+  },
+  "region": "us-west-2",
+  "sample_data": [
+    "sample-1",
+    "sample-2",
+    "sample-3"
+  ]
+}

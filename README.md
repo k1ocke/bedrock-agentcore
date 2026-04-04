@@ -69,13 +69,28 @@ See `requirements.txt` for Python dependencies:
 
 ## Configuration
 
-Configuration files (not included in repo for security):
+Configuration files are required but not included in the repository for security.
+
+**Sample templates** are provided in the `config-samples/` directory with placeholder values.
+
+### Required Configuration Files
+
 - `memory_config.json` - Memory ID
 - `cognito_config.json` - Cognito credentials
 - `gateway_config.json` - Gateway URL and ID
 - `lambda_config.json` - Lambda ARN and tool schema
 - `kb_config.json` - Knowledge Base ID
 - `runtime_config.json` - Agent ARN
+- `gateway_role_config.json` - Gateway IAM role
+- `runtime_execution_role_config.json` - Runtime IAM role
+
+### Setup Configuration
+
+1. Copy sample files from `config-samples/` to project root
+2. Run the numbered setup scripts (03, 08, 09, 10, 11, 12, 16, 19)
+3. Each script will populate its corresponding config file with actual values
+
+See `config-samples/README.md` for detailed instructions.
 
 ## Usage
 

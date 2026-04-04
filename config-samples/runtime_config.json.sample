@@ -1,0 +1,8 @@
+{
+  "agent_arn": "arn:aws:bedrock-agentcore:us-west-2:123456789012:runtime/your_agent_name-XXXXXXXXXXXX",
+  "agent_name": "your_agent_name",
+  "region": "us-west-2",
+  "memory_id": "your_memory_name-XXXXXXXXXXXX",
+  "gateway_url": "https://yourgatewayname-XXXXXXXXXXXX.gateway.bedrock-agentcore.us-west-2.amazonaws.com/mcp",
+  "knowledge_base_id": "XXXXXXXXXX"
+}

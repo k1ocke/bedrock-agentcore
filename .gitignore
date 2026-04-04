@@ -1,4 +1,4 @@
-# Sensitive configuration files
+# Sensitive configuration files (exclude actual configs, but allow samples)
 *_config.json
 cognito_config.json
 gateway_config.json
@@ -8,6 +8,10 @@ lambda_config.json
 memory_config.json
 runtime_config.json
 runtime_execution_role_config.json
+
+# Allow sample config files
+!config-samples/*.sample
+!config-samples/README.md
 
 # Python
 __pycache__/

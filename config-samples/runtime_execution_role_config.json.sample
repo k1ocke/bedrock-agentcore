@@ -1,0 +1,7 @@
+{
+  "role_name": "AgentCoreRuntimeExecutionRole-XXXXXXXXXX",
+  "role_arn": "arn:aws:iam::123456789012:role/AgentCoreRuntimeExecutionRole-XXXXXXXXXX",
+  "policy_name": "AgentCoreRuntimePolicy-XXXXXXXXXX",
+  "policy_arn": "arn:aws:iam::123456789012:policy/AgentCoreRuntimePolicy-XXXXXXXXXX",
+  "region": "us-west-2"
+}

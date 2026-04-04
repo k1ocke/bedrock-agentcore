@@ -1,0 +1,6 @@
+{
+  "knowledge_base_id": "XXXXXXXXXX",
+  "region": "us-west-2",
+  "retrieved_from": "CloudFormation stack 'your-stack-name'",
+  "retrieved_at": "YYYY-MM-DD"
+}
