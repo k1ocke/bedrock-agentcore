@@ -19,7 +19,9 @@ Test Categories:
 import json
 import time
 import requests
+import yaml
 from datetime import datetime
+from bedrock_agentcore_starter_toolkit import Runtime
 
 # Color codes for output
 class Colors:
@@ -82,33 +84,20 @@ def get_oauth_token(cognito_config):
     else:
         raise Exception(f"Failed to get OAuth token: {response.text}")
 
-def invoke_agent(runtime_config, bearer_token, prompt, actor_id="test_user"):
-    """Invoke the deployed agent"""
-    agent_arn = runtime_config['agent_arn']
-    region = runtime_config['region']
-    
-    # Extract agent runtime ID from ARN
-    agent_runtime_id = agent_arn.split('/')[-1]
-    
-    url = f"https://bedrock-agentcore-runtime.{region}.amazonaws.com/invoke"
-    
-    headers = {
-        'Authorization': f'Bearer {bearer_token}',
-        'Content-Type': 'application/json'
-    }
-    
+def invoke_agent(runtime, bearer_token, prompt, actor_id="test_user"):
+    """Invoke the deployed agent using Runtime class"""
     payload = {
-        'agentRuntimeId': agent_runtime_id,
-        'inputText': prompt,
-        'actorId': actor_id
+        "prompt": prompt,
+        "actor_id": actor_id
     }
     
-    response = requests.post(url, headers=headers, json=payload)
+    response = runtime.invoke(payload, bearer_token=bearer_token)
     
-    if response.status_code == 200:
-        return response.json()
+    # Extract response text
+    if isinstance(response, dict):
+        return {'output': response.get('response', str(response))}
     else:
-        raise Exception(f"Agent invocation failed: {response.status_code} - {response.text}")
+        return {'output': str(response)}
 
 class TestResult:
     def __init__(self, name, category):
@@ -120,10 +109,12 @@ class TestResult:
         self.duration = 0
 
 class E2ETestSuite:
-    def __init__(self, runtime_config, cognito_config):
+    def __init__(self, runtime_config, cognito_config, role_config):
         self.runtime_config = runtime_config
         self.cognito_config = cognito_config
+        self.role_config = role_config
         self.bearer_token = None
+        self.runtime = None
         self.results = []
         
     def setup(self):
@@ -133,6 +124,41 @@ class E2ETestSuite:
         self.bearer_token = get_oauth_token(self.cognito_config)
         print_success("OAuth token obtained")
         
+        # Load runtime configuration
+        print_info("Loading runtime configuration...")
+        with open('.bedrock_agentcore.yaml') as f:
+            runtime_yaml = yaml.safe_load(f)
+        
+        default_agent = runtime_yaml.get('default_agent')
+        agent_config = runtime_yaml.get('agents', {}).get(default_agent, {})
+        agent_name = agent_config.get('name')
+        entrypoint = agent_config.get('entrypoint')
+        
+        # Initialize Runtime
+        self.runtime = Runtime()
+        
+        # Build authorizer configuration
+        auth_config = {
+            "customJWTAuthorizer": {
+                "allowedClients": [self.cognito_config["client_id"]],
+                "discoveryUrl": self.cognito_config["discovery_url"]
+            }
+        }
+        
+        # Configure runtime
+        self.runtime.configure(
+            entrypoint=entrypoint,
+            agent_name=agent_name,
+            execution_role=self.role_config["role_arn"],
+            auto_create_ecr=True,
+            memory_mode="NO_MEMORY",
+            requirements_file="requirements.txt",
+            region="us-west-2",
+            authorizer_configuration=auth_config
+        )
+        
+        print_success("Runtime configured")
+        
     def run_test(self, name, category, prompt, actor_id, validation_fn):
         """Run a single test"""
         result = TestResult(name, category)
@@ -141,7 +167,7 @@ class E2ETestSuite:
         start_time = time.time()
         try:
             response = invoke_agent(
-                self.runtime_config,
+                self.runtime,
                 self.bearer_token,
                 prompt,
                 actor_id
@@ -531,8 +557,9 @@ def main():
     print_info("Loading configurations...")
     runtime_config = load_config('runtime_config.json')
     cognito_config = load_config('cognito_config.json')
+    role_config = load_config('runtime_execution_role_config.json')
     
-    if not runtime_config or not cognito_config:
+    if not runtime_config or not cognito_config or not role_config:
         print_failure("Failed to load required configurations")
         return
     
@@ -541,7 +568,7 @@ def main():
     print_info(f"Region: {runtime_config['region']}")
     
     # Run test suite
-    suite = E2ETestSuite(runtime_config, cognito_config)
+    suite = E2ETestSuite(runtime_config, cognito_config, role_config)
     suite.run_all_tests()
 
 if __name__ == "__main__":
